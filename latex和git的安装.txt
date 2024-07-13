@@ -1,0 +1,9 @@
+Latex:
+1. 在官网 https://www.tug.org/texlive/quickinstall.html 下载TeX Live
+2. 安装VS Code之后，安装Latex workshop 插件
+
+
+git:
+1. 下载地址：https://git-scm.com/download/win
+2. 安装指南：https://blog.csdn.net/weixin_42242910/article/details/136297201
+
