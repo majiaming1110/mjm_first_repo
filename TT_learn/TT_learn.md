@@ -14,6 +14,7 @@
 * Confluence里有很多软件的经验文档（现在已转为redmine）
 * AUTOSAR中，`SRS`代表`软件需求规范`；`SWS`代表`软件规范`（__更详细__）
 * `C:\Users\admin\Desktop\mcal_demo\mcal\dio_demo\led-blink\srcA8V2_CORE_DCDC_V1_1`是板子的引脚图，第二页右边最大的应该就是A8，找到目标GPIO看它对应引出来的红色字写了什么，__红色的字就是在板子四周实际打印出来的字__
+* J-Link的全称是：SEGGER-JLink
 
 
 ---
@@ -26,7 +27,7 @@
     * Step1. 在EB中进行配置，记下EB生成的配置文件output路径
     * Step2. 在TT Studio里创建MCAL工程
         * _plugin_：对应bsp包下的m7\assembly\plugins，比如`D:\ThinkTechStudio\thinktech\bsp\TTA8_V1.1.0\m7\assembly\plugins`
-        * _generate code path_： 就是刚刚EB生成的配置文件路径
+        * _generate code path_： 就是刚刚EB生成的配置文件路径（__注意，如果EB项目名字改了，path别忘记改！！！__）
 
 * TT Studio里的pinmux和EB里的port配置向对应：
   * 在BSP工程中，引用的是`Port_Drv.h`，对应初始化API`Port_Drv_Init(&Port_ConfigData);`
@@ -51,6 +52,8 @@
 
 * 假设模块A，BSP层的接口一般在`A_Drv.h`，MCAL层的接口一般在`A.h`（gpt例外，它只有`gpt.h`）；一般MCAL层的接口会调用BSP层的接口，相当于一种为了满足AUTOSAR标准的上层封装，这点也可以通过右击API选择`Open Call Hierarchy`来进行验证
 
+* 在观察代码构成时，可以看右侧的Tab, 函数的前方会有一个绿色的小点标记
+
 
 
 # EB
@@ -74,6 +77,12 @@ __模块的学习参考：这份文档+Xmind+芯片手册+AutoSAR规范__
 ---
 
 ## 基础模块
+### Base模块
+* Base模块体现在TTStudio中，`Base_TS_TTA8M1I1P0`文件夹多了`header`和`interface`两个文件夹：
+  * __header:__ 定义了每个模块的基地址映射，和相关寄存器的地址映射，起名格式是`A8V2_模块名.h`
+  * __interface:__ 
+
+
 ### Port模块
 配置引脚用
 * 需要上拉电阻的引脚配成`开漏OD`(比如I2C)；其他配成`推挽PP`
@@ -140,6 +149,8 @@ __模块的学习参考：这份文档+Xmind+芯片手册+AutoSAR规范__
   * 1 tick的设置范围：0.2~90us
   * 12-27个tick为一组，名为`Nibble`，1个`Nibble`必须在[12,27]个ticks之间，Nibble的值由两个下降沿的时间差来决定，第一个下降沿在tick0就发生了，且在12个tick之内会上升，所以12tick之后遇到的第一个下降沿对应多少tick，Nibble的值就是多少。所以 __Nibble的值在0到15之间，对应二进制0000~1111__，4个bit对应0.5Byte,__这就是‘半字’的由来__
 * A8支持三种CRC算法：传统CRC；推荐CRC；AlterCRC。且都可以选择‘带状态的CRC’
+* SENT中有很多种错误，当发生一个错误时，会置起`中断状态寄存器`中相应的位
+* 当依次调用`Sent_Drv_Init`和`Sent_Drv_Start`后，其实SENT模块就开始工作了，（不管读不读都会不断的覆写FIFO？）
 * 
 
 ##### 帧结构
@@ -171,8 +182,7 @@ __模块的学习参考：这份文档+Xmind+芯片手册+AutoSAR规范__
 * __看门狗__：时基为tick，本质是一个可以设置目标值的计数器，当接收完一个SENT帧后计数到达上限则报警；反之当帧数据接收完毕/寄存器写0时可以清0
 * __数字滤波电路__：`想要滤去的最大毛刺时间 = （1/sent时钟频率）* 控制寄存器要设置的值`，时钟频率通常是120MHz，控制寄存器值范围0~511
 
-##### 错误检测
-* SENT中有很多种错误，当发生一个错误时，会置起`中断状态寄存器`中相应的位
+
   
   
 
