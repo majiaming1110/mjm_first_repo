@@ -125,7 +125,7 @@ __模块的学习参考：这份文档+Xmind+芯片手册+AutoSAR规范__
 
 * general purpose timer 通用定时器
 
-* __notification通知__和__唤醒__都会产生中断，且都是在当计数器数到`target time`的时候，而`target time`就是在调用`Gpt_StartTimer`函数时输入的第二个参数
+* __notification通知__ 和 __wakeup唤醒__ 都会产生中断，且都是在当计数器数到`target time`的时候，而`target time`就是在调用`Gpt_StartTimer`函数时输入的第二个参数
   * __notification 中断__：*这种中断用于在定时器达到目标时间时调用一个特定的通知函数。这个通知函数可以执行各种用户定义的操作，如处理定时事件、更新系统状态等。*
   * __wakeup 中断__：*只能在`sleep mode`下才能生效！！这种中断用于在ECU（电子控制单元）处于低功耗模式时，当定时器达到目标时间时唤醒ECU。这个功能常用于在低功耗模式下需要定时唤醒系统执行某些任务。*
 
