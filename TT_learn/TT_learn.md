@@ -28,7 +28,7 @@
 * __在TT Studio中创建MCAL项目__
     * ~~在gitlab中有一个‘ttspy’工具可以自动化实现在TTStudio的MCAL项目创建; 具体使用方法见`\\192.168.2.6\公司文件\培训库\05_高阶研发类\081_EB软件配置及工程构建\A8工程构建快速入门.mp4 --50分钟`~~
     * ~~用工具生成之后，再import到TTStudio里就OK~~
-    * Step0. 安装MCAL包，EB的地址是：`C:\EB\tresos`
+    * Step0. 安装MCAL包，EB的地址是：`C:\EB\tresos`.
     * Step1. 在EB中进行配置，记下EB生成的配置文件output路径
     * Step2. 在TT Studio里创建MCAL工程
         * _plugin_：对应bsp包下的m7\assembly\plugins，比如`D:\ThinkTechStudio\thinktech\bsp\TTA8_V1.1.0\m7\assembly\plugins`
