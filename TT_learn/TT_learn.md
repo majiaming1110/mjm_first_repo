@@ -15,6 +15,8 @@
 * AUTOSAR中，`SRS`代表`软件需求规范`；`SWS`代表`软件规范`（__更详细__）
 * `C:\Users\admin\Desktop\mcal_demo\mcal\dio_demo\led-blink\srcA8V2_CORE_DCDC_V1_1`是板子的引脚图，第二页右边最大的应该就是A8，找到目标GPIO看它对应引出来的红色字写了什么，__红色的字就是在板子四周实际打印出来的字__
 * J-Link的全称是：SEGGER-JLink
+* CMSIS 代表 "Cortex Microcontroller Software Interface Standard"（Cortex 微控制器软件接口标准）。CMSIS 是由 ARM 提供的一套标准化软件框架和库，旨在简化 Cortex-M 微控制器的开发
+* ARM Cortex-M 处理器中，一个字（word）通常是 32 位，也就是 4 字节。
 
 
 ---
@@ -153,6 +155,22 @@ __模块的学习参考：这份文档+Xmind+芯片手册+AutoSAR规范__
 
   * 如果启用了一个GPT预定义定时器，那么所有具有相同时间刻度但位数更低的定时器也应被启用。
     * 比如我启用了1us 32位的预定时器，我就也必须开启1us 16位和24位的定时器
+  
+### Systick模块(ARM核外设)
+* 本质是一个24bit，向下且循环计数的计数器；在处理器时钟上运行
+* CSR寄存器的bit0用于开启计数；bit1用于开启中断
+
+### SCB模块(ARM核外设)
+* System Control Block，提供系统实现信息和系统控制，它包括系统异常的配置、控制和报告
+* VTOR寄存器：32位，存储中断向量表的基地址，__注意！存放的是地址！__
+  * 在`src/bsp/env/vector_table_m7.S`中，用汇编定义了详细的中断向量表，且将16位之后的外部中断函数全部定义成了可以被重写的`weak`函数；在`Platform_IntCtrl_Cfg.h`中，将所有外部中断的weak函数重新定义。如果在配置的时候，将某个外部中断打开，那么程序会读取配置生成的`Platform_IntCtrl_PBCfg.c`，找到开启的中断号并通过操控`NVIC`模块的`IESR`寄存器打开中断
+    ![alt text](QQ_1721971896084.png)
+  * 如果前15个中断号有对应的模块且该模块开启了中断，那么中断处理函数就会默认在`src/bsp/env/exceptions_m7.c`中被定义
+  ![alt text](QQ_1721966393494.png)
+  * 在中断向量表中，每个ISR占一个`word`的大小（4字节）
+  __当然也可以选择动态重写这些函数，ARM规定，前15个中断CMSIS编号为负，SYSTICK的CMSIS的中断号为-1，而如果想要在VTOR中动态注册回调函数就需要偏移16位__
+    * 将SYSTICK中断回调动态设置的典型示例： `((volatile uint32 *)TT_SCB->VTOR)[16+SysTick_IRQn] = (uint32)&TST_IRQHandler;`，这样，当 SysTick 发生中断时，处理器会跳转到 TST_IRQHandler 函数执行相应的中断处理程序
+
 
 ## 通信接口
 ### SENT模块
