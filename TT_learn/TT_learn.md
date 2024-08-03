@@ -23,10 +23,16 @@
 
 ---
 
+
+
 # 测试
+
 ### 名词定义：
-![alt text](QQ_1721714296256.png)
+
+![alt text](./pic/QQ_1721714296256.png)
 * 打印`几级日志`决定的是 __在串口输出时的缩减__
+
+
 
 # TT Studio
 * __在TT Studio中创建MCAL项目__
@@ -44,12 +50,12 @@
   
 * TTStudio报错的格式为`Module:219,ApiId:100,ErrStatus:0x33`： 
   * Module号码在相应模块的`XXX_Drv.c`中的`Source File Version Information`对应：
-  ![alt text](QQ_1720686317953.png)
+  ![alt text](./pic/QQ_1720686317953.png)
   * 找到对应模块后，ApiId在同一个`XXX_Drv.c`中对应函数的前缀注释里：
-  ![alt text](QQ_1720686399229.png)
+  ![alt text](./pic/QQ_1720686399229.png)
   * 最后的ErrStatus需要查看对应`TT_DrvError.h`中定义的宏
     > 在错误函数里随便找一个 `_ERR` 结尾的变量跳转一下就可以到这个文件里去了
-  ![alt text](QQ_1720686639413.png)
+  ![alt text](./pic/QQ_1720686639413.png)
 
 * 在EB配置完成后，在TTStudio里使用API经常不知道应该调用哪个变量，因为config文件是由EB自动生成的，这个时候应该参考以下办法：
   * 首先，EB生成的是一个`output`文件夹，在TT Studio的项目下可以找到这个被链接的同名文件夹。假设模块A，则其对应的配置文件应该出现在:`output/include/A_Cfg.h`和`output/src/A_PBcfg.c`这两个文件下
@@ -70,24 +76,27 @@
 # EB
 * 创建工程：
   1. 项目名称
-  ![alt text](QQ_1721199706956.png)
+  ![alt text](./pic/QQ_1721199706956.png)
   2. ECU ID就是刚刚的项目名称，Target就是A8
-  ![alt text](QQ_1721199753668.png)
+  ![alt text](./pic/QQ_1721199753668.png)
   3. 选择相应的模块
 
 * 在安装完EB的mcal包后，在`C:\EB\tresos\plugins`下可以看到由mcal包自动导入的plugins，每个plugin里面的config文件夹里有一个xdm文件，这个文件使用的xml语言，通过一个个'节点'，'容器'等的定义来实现了EB软件界面的配置菜单：
-![alt text](QQ_1720523439156.png)
+<img src="./pic/QQ_1720523439156.png" alt="alt text" style="zoom: 100%;" />
 * EB界面的help -> help contents里有很多帮助文件（要学会看官方手册！）
-![alt text](QQ_1720523684016.png)
+<img src="./pic/QQ_1720523684016.png" alt="alt text" style="zoom:50%;" />
 * 每个工程基本都要配置的模块：`Base`；`Mcu`；`Platform`；`Port`(引脚)；`Uart`; `Resource`
     * `Resource`模块的版本选择一定要和芯片版本对应，A8V2E
 * 每个模块都会默认选择`PreCompile`，这种情况下在TTStudio中调用相应初始化API的时候 __传入参数就必须是空指针__；但如果客户想要修改对应结构体的内容，则需要在EB里选择`PostBuild`，然后对应在TTStudio初始化的时候就需要 __传入相应的结构体指针__
 
 ---
 
+
+
 # 模块学习
+
 A8模块总览：
-![alt text](image-1.png)
+![alt text](./pic/image-1.png)
 
 ---
 
@@ -95,20 +104,28 @@ __模块的学习参考：这份文档+Xmind+芯片手册+AutoSAR规范__
 
 ---
 
+
+
 ## 基础模块
+
 ### Base模块
 * Base模块体现在TTStudio中，`Base_TS_TTA8M1I1P0`文件夹多了`header`和`interface`两个文件夹：
   * __header:__ 定义了每个模块的基地址映射，和相关寄存器的地址映射，起名格式是`A8V2_模块名.h`
   * __interface:__ 
 
 
+
 ### Port模块
+
 配置引脚用
 * 需要上拉电阻的引脚配成`开漏OD`(比如I2C)；其他配成`推挽PP`
 * 引脚可以配置成`IN`；`OUT`；`INOUT`，其中，如果是作`GPIO口`则不允许配置成`INOUT`
 * 
 
+
+
 ### DIO模块
+
 * __DIO的初始化均由Port模块完成__
   * 在port中初始化相应的引脚为DIO
   * 在DIO模块里要再初始化一下，已通过软件代码的参数检查
@@ -126,13 +143,16 @@ __模块的学习参考：这份文档+Xmind+芯片手册+AutoSAR规范__
   * 根据实践，也可以通过跳转然后用这个表达式`Dio_GlobalData.Config[0].DioChannelConfigData[x]`
 * 对‘配置为输入的GPIO’进行channel write没用，也没有意义
 * DIO配置Channel Group:
-  ![alt text](QQ_1720687460234.png)
+  <img src="./pic/QQ_1720687460234.png" alt="alt text" style="zoom:50%;" />
   * 同样的，在TTStudio中，channel group的表示也需要找到程序定义的那个结构体：`Dio_GlobalData.Config[1].DioChannelGroupConfigData`
 * DIO可以配置中断，但是 __同一个端口内的通道只能共用一个中断__。开启中断后，同样需要配置对应的port和platform
   * platform模块中，GPIOA -> DIO的GPIO0 -> 端口0的中断
   * 端口的中断处理函数IRQ会有一个参数ch，假设是通道19触发了中断，那么这个ch的值就是`0000 0000 0000 1000 0000 0000 0000 0000`，对应10进制的`524288`，__如果中断处理函数调用期间另两个属于该端口的通道触发了中断，那他们会等当前中断结束后，按顺序再依次进入IRQ__
 
+
+
 ### MCL模块
+
 * 是一个多个功能的结合模块：__Smpu; Pdb; Mailbox; Trgmux__
 #### Smpu
 
@@ -144,7 +164,9 @@ __模块的学习参考：这份文档+Xmind+芯片手册+AutoSAR规范__
 * 用于将一个接口作为输入；另一个接口作为输出，__输入接口的上升沿可以触发另一接口的对应功能__
 
 
+
 ### GPT模块
+
 * FTM的一个子模块，是一个16位的计数器
 
 * general purpose timer 通用定时器
@@ -155,47 +177,62 @@ __模块的学习参考：这份文档+Xmind+芯片手册+AutoSAR规范__
 
 * 在AUTOSAR规范下，有一个叫做Predef Timer(预定义定时器)的概念：
   * AUTOSAR规定的预定时器种类：
-    ![alt text](QQ_1720665071436.png)
+    ![alt text](./pic/QQ_1720665071436.png)
     * *AUTOSAT希望能够尽可能的实现以上所有的预定时器，以确保所有平台的基于时间的功能兼容性*
     * 预定时器是一个自动循环计时的定时器
     * 所有涉及channel作为参数的API都对预定义定时器无效，所以对于预定时器来说，不需要对他调用start和stop，也不能使用get_remaining/eclapse_time的API，所以在TTStudio中，想获取预定义定时器的当前计数值可以调用`Gpt_GetPredefTimerValue`函数。__同时，在TTStudio里，普通定时器的计数值是存储在CNT寄存器中的，但是预定义定时器的当前计数值是靠软件层面自加实现的（在预定义定时器的IRQ对计数值自加）__
   
   * AUTOSAR 建议每个时间刻度使用一个硬件定时器，并通过选择合适的时钟和预分频器将硬件定时器直接与时钟源 "fclock = 1 / (时间刻度)" 连接。这样，可以直接使用定时器计数寄存器的值，而无需进行任何适配（计算），以提高性能
-    * *比如，如果GPT使用了`FTM_CLOCK_SOURCE_SYSTEMCLK`作为时钟源，那么频率是120Mhz，那么如果我想实现1us的时间刻度，我应该选择120分频（__1微秒的时间间隔对应于1 MHz的频率__）*
-  
+    
+  * *比如，如果GPT使用了`FTM_CLOCK_SOURCE_SYSTEMCLK`作为时钟源，那么频率是120Mhz，那么如果我想实现1us的时间刻度，我应该选择120分频（__1微秒的时间间隔对应于1 MHz的频率__）*
+    
   * 已知GPT是16位的，所以硬件上并不能实现24和32bit的预定时器，这个时候可以使用软件的方法来模拟更高位数的计时器（但这会带来一些复杂性和额外的计算开销）
      * *可以参考的办法：*
     > *__异步级联定时器作为预分频器__
     > 使用一个定时器作为另一个定时器的预分频器，这样可以通过第一个定时器降低时钟频率，从而扩展第二个定时器的范围
     >__同步级联定时器扩展定时器范围（位数）__
-    > 将多个定时器同步级联，以扩展定时器的位数范围。例如，将两个16位定时器同步级联，可以扩展到32位*
-
+  > 将多个定时器同步级联，以扩展定时器的位数范围。例如，将两个16位定时器同步级联，可以扩展到32位*
+  
   * 如果启用了一个GPT预定义定时器，那么所有具有相同时间刻度但位数更低的定时器也应被启用。
+    
     * 比如我启用了1us 32位的预定时器，我就也必须开启1us 16位和24位的定时器
   
+
+
+
 ### Systick模块(ARM核外设)
+
 * 本质是一个24bit，向下且循环计数的计数器；在处理器时钟上运行
 * CSR寄存器的bit0用于开启计数；bit1用于开启中断
 
+
+
 ### SCB模块(ARM核外设)
+
 * System Control Block，提供系统实现信息和系统控制，它包括系统异常的配置、控制和报告
 * VTOR寄存器：32位，存储中断向量表的基地址，__注意！存放的是地址！__
   * 在`src/bsp/env/vector_table_m7.S`中，用汇编定义了详细的中断向量表，且将16位之后的外部中断函数全部定义成了可以被重写的`weak`函数；在`Platform_IntCtrl_Cfg.h`中，将所有外部中断的weak函数重新定义。如果在配置的时候，将某个外部中断打开，那么程序会读取配置生成的`Platform_IntCtrl_PBCfg.c`，找到开启的中断号并通过操控`NVIC`模块的`IESR`寄存器打开中断
-    ![alt text](QQ_1721971896084.png)
+    <img src="./pic/QQ_1721971896084.png" alt="alt text" style="zoom:50%;" />
   * 如果前15个中断号有对应的模块且该模块开启了中断，那么中断处理函数就会默认在`src/bsp/env/exceptions_m7.c`中被定义，且在这个文件中被赋予`weak`属性
-  ![alt text](QQ_1721966393494.png)
+  <img src="./pic/QQ_1721966393494.png" alt="alt text" style="zoom:50%;" />
   * 在中断向量表中，每个ISR占一个`word`的大小（4字节）
   __当然也可以选择动态重写这些函数，ARM规定，前15个中断CMSIS编号为负，SYSTICK的CMSIS的中断号为-1，而如果想要在VTOR中动态注册回调函数就需要偏移16位__
     * 将SYSTICK中断回调动态设置的典型示例： `((volatile uint32 *)TT_SCB->VTOR)[16+SysTick_IRQn] = (uint32)&TST_IRQHandler;`，这样，当 SysTick 发生中断时，处理器会跳转到 TST_IRQHandler 函数执行相应的中断处理程序
 
+
+
 ### ITCM/DTCM(ARM核存储空间)
+
 * 在 ARM 处理器架构中，紧耦合存储器 (Tightly-Coupled Memory, TCM) 是一种专用的高性能内存，用于存储时间敏感的数据和指令。TCM 分为两种类型：指令紧耦合存储器 (Instruction TCM, ITCM) 和 数据紧耦合存储器 (Data TCM, DTCM)。这两种存储器通常直接连接到处理器核心，提供比外部存储器更快的访问速度。
 * 应用场景：
   * 涉及DMA需要搬运的数据，可以为其加上`__attribute__ ((section (".mcal_data_dtcm")))`的属性；使用 DTCM 作为数据存储区域，并通过 DMA 进行数据传输，可以显著提升系统的响应时间和数据处理效率
   * 对于需要快速处理的函数/代码，在定义前指定`__attribute__((section(".mcal_text_itcm")))`属性，但注意，__这句话的作用域仅限紧跟的一个函数__
-![alt text](QQ_1722322615019.png)
+![alt text](./pic/QQ_1722322615019.png)
+
+
 
 ## 通信接口
+
 ### SENT模块
 * __Single Edge Nibble Transmission 单边半字传输协议__
 * SENT协议是一种和CAN,LIN并列的概念,但比CAN,LIN更加经济可靠，无需接收器/集成发射器
@@ -209,7 +246,7 @@ __模块的学习参考：这份文档+Xmind+芯片手册+AutoSAR规范__
 * 当依次调用`Sent_Drv_Init`和`Sent_Drv_Start`后，其实SENT模块就开始工作了，（不管读不读都会不断的覆写FIFO？）
 * `Sent Nibble Number`的值指的是 __数据段的Nibble数__
 * 下图中，`带注释被红框标注的错误`会导致 __数据的丢弃__
-![alt text](QQ_1722310340934.png)
+![alt text](./pic/QQ_1722310340934.png)
 __但是，如果将`SentDataDiscard`设置为`TRUE`时，不会丢弃数据！同时，数据丢弃并不会清除FRAMEDATA寄存器的值！__
 * SENT的FIFO和FRAMEDATA寄存器没有直接的关联，也就是说读取`FRAMEDATA`并不等于读取FIFO，且 __如果没有复位或者新的接收完成标志，FRAMEDATA寄存器的值就不会更新，保持上一个值__
 * SENT的配置选项中有一个`SentFliterCount`选项，详见EB手册，当该值不为0的时候会开启毛刺的过滤，当开启毛刺过滤且真的检测到毛刺时，`INT_STAT`寄存器的毛刺位会置起
@@ -223,21 +260,21 @@ __但是，如果将`SentDataDiscard`设置为`TRUE`时，不会丢弃数据！�
   * `数据段` --- __1~8 Nibbles__, 
   * `校验段` --- __12~27 ticks__，CRC校验，通过数据段反算得出
   * （`暂停脉冲段`） --- 可选，__12~768 ticks__，用于保证SENT帧长度一致
-  ![alt text](QQ_1721100359907.png)
+  ![alt text](./pic/QQ_1721100359907.png)
   
 ##### 模块功能
 * __串行消息传输__：按照上述帧结构，一帧一帧连续传就叫 __快速通道传输__；而如果将多个帧的内容组合在一起形成一段消息，就叫 __慢速通道传输__ （重要信号走快速，非关键信号走慢速）
   *  __慢速通道传输__ 又叫 __串行消息传输__，串行消息传输又有 __短串行消息__ 和 __增强串行消息__ 两种模式：
      *  __短串行消息__：
-    ![alt text](QQ_1720774334323.png)
+    ![alt text](./pic/QQ_1720774334323.png)
      *  __增强串行消息__：
-    ![alt text](QQ_1720774400355.png)
+    ![alt text](./pic/QQ_1720774400355.png)
 
 * __校准脉冲检测__：这是一个在EB上可以开关的选项。刚刚提到的`同步段`固定为56个ticks，但实际中允许一定的偏差（25%），而校准这个ticks数量的算法就是校准脉冲算法，其中包括 __连续校准脉冲推荐算法__ 和 __连续校准脉冲备选算法__：
   * __连续校准脉冲推荐算法__：（默认，可以检测出更多的nibble，但耗时更长）
-  ![alt text](QQ_1720775154377.png)
+  <img src="./pic/QQ_1720775154377.png" alt="alt text" style="zoom: 50%;" />
   * __连续校准脉冲备选算法__：
-  ![alt text](QQ_1720775179850.png)
+  <img src="./pic/QQ_1720775179850.png" alt="alt text" style="zoom:50%;" />
 
 *  __数据位置摆放__：`sent_data_ctrl`控制`sent_frame_data`的数据摆放顺序 
 * __SPC协议__：Short PWM Code，本质上是ECU和传感器之间的握手协议，形式是一个低电平脉冲
@@ -253,12 +290,13 @@ __但是，如果将`SentDataDiscard`设置为`TRUE`时，不会丢弃数据！�
 * __数字滤波电路__：`想要滤去的最大毛刺时间 = （1/sent时钟频率）* 控制寄存器要设置的值`，时钟频率通常是120MHz，控制寄存器值范围0~511
 
 ##### SENT信号的IRQ/DMA模式
+
 SENT信号的发送可以配置为轮询；IRQ和DMA模式，其中IRQ和DMA都可以配置回调函数
 * 在IRQ模式中，回调的入参`event`的值是INT_STAT寄存器的映射，（但如果想要相应的错误位置起，需要配置打开），这是由`Sent_Hw.c`中的`Sent_Hw_PriIrqHandler`函数决定的
 * 在DMA模式下，回调的入参`event`只有可能是两个值：`SENT_DMA_COMPLETE`或`SENT_DMA_ERROR`，这是由`Sent_Hw.c`中的`Sent_Hw_PriDmaEvent`函数决定的
 
-
 ##### 自动生成SENT信号
+
 由于海拉传感器的SENT信号很随机无法精确预测，给测试带来了很大的困扰，所以有一套自己生成SENT信号的代码库，可以通过接口翻转电平模拟SENT信号，以下是一些注意点：
 * 在使用自动生成SENT信号的代码时，如果想用某个信号，要做以下三件事：
   1. `timer.c`中将对应信号的最后一个数字删掉
@@ -269,13 +307,11 @@ SENT信号的发送可以配置为轮询；IRQ和DMA模式，其中IRQ和DMA都�
   6. `SentData.h`中将对应的`SentStaticData_XXX`容量-1
 
 * 如果想要在中途修改cfg配置结构体的设置，要先 __停止信号，去初始化，修改配置，初始化，再开启信号__
-![alt text](QQ_1722310256028.png)
+![alt text](./pic/QQ_1722310256028.png)
 
 
 
 
-  
-  
 
 
 ### ICU模块
