@@ -1,3 +1,6 @@
+### Typora激活码
+`uOIqj26Dz3nNSYF00s4paGgzfoGSh1zpP94V59p5s84son7syzCR0w1iaXPb/GNWwpzVQDBHd6vgyHXptveBGG5YL5tAMbjBxm8BiGCFhyQ0HGC0OXFv0KIHG4XD4RO5RHjOzfcsozxVyHVVVaLqTA==`
+
 ### 一周总结
 * SENT的看门狗
 * SENT DMA传输的中断入参
