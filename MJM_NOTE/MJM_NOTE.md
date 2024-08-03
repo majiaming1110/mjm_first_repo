@@ -1,6 +1,10 @@
 ### Typora激活码
 `uOIqj26Dz3nNSYF00s4paGgzfoGSh1zpP94V59p5s84son7syzCR0w1iaXPb/GNWwpzVQDBHd6vgyHXptveBGG5YL5tAMbjBxm8BiGCFhyQ0HGC0OXFv0KIHG4XD4RO5RHjOzfcsozxVyHVVVaLqTA==`
 
+### 长远学习计划
+* TTStudio工程结构整理
+* 编译器，ld方向学习
+
 ### 一周总结
 * SENT的看门狗
 * SENT DMA传输的中断入参
@@ -8,16 +12,13 @@
 * SENT测试代码
 
 ### 暂存问题
-1. precompile
-2. bsp工程下port模块初始化传参问题
-3. SENT的备选CRC方案具体是什么？
+1. bsp工程下port模块初始化传参问题
 
 ### 临时问题
-1. 头文件怎么样才能检测到上级目录？
-2. `A8V3_Sent_DMAWorkMode_Normal_Test_Case("MCAL_Sent_003[NORMAL]")`为啥可以这么写
+1. `A8V3_Sent_DMAWorkMode_Normal_Test_Case("MCAL_Sent_003[NORMAL]")`为啥可以这么写
 
 
-### TODO LIST
+### 临时TODO LIST
 - [ ] 完善代码不使用malloc
 - [ ] 完善CRC函数的编码
 - [ ] 根据MIZAR C规范，为每一个if写一个else
