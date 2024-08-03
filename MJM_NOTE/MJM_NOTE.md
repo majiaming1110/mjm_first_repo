@@ -52,9 +52,10 @@
 
 ### 临时TODO LIST
 
-- [ ] 完善代码不使用malloc
-- [ ] 完善CRC函数的编码
-- [ ] 根据MIZAR C规范，为每一个if写一个else
+- [ ] SNET: 完善代码不使用malloc
+- [ ] SENT: 完善CRC函数的编码
+- [ ] SENT: 根据MIZAR C规范，为每一个if写一个else
+- [ ] SENT: 优化实现逻辑，让信号生成的更加实时
 
 
 
