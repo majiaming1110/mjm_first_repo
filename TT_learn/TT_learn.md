@@ -76,9 +76,9 @@
 # EB
 * 创建工程：
   1. 项目名称
-  ![alt text](./pic/QQ_1721199706956.png)
+  <img src="./pic/QQ_1721199706956.png" alt="alt text" style="zoom:50%;" />
   2. ECU ID就是刚刚的项目名称，Target就是A8
-  ![alt text](./pic/QQ_1721199753668.png)
+  <img src="./pic/QQ_1721199753668.png" alt="alt text" style="zoom:50%;" />
   3. 选择相应的模块
 
 * 在安装完EB的mcal包后，在`C:\EB\tresos\plugins`下可以看到由mcal包自动导入的plugins，每个plugin里面的config文件夹里有一个xdm文件，这个文件使用的xml语言，通过一个个'节点'，'容器'等的定义来实现了EB软件界面的配置菜单：
