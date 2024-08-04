@@ -131,7 +131,7 @@
         }
         ```
         
-    2. 然后在每一帧的有效值赋值时，使用如下的语法：**且额外定义一个和Signal[ ]大小相同的数组专门用于存储当前有效数据为高/低电平**
+    2. 然后在每一帧的有效值赋值时，使用如下的语法：**且额外定义bit15为level位，用于指示该有效数据是否为高电平
 
         ```
         #define HIGH 1
@@ -140,17 +140,20 @@
         if (j == 0)
         {
         	Signal[index] = 6;
-        	Signal_Level[index] = LOW;
+        	// low level 不用操作
         }
         else if (j == 1)
         {
         	Signal[index] = 50;
-        	Signal_Level[index] = HIGH;
+        	/* level位置起*/
+        	Signal[index] &= （0x1 << 15);
         }
         else if ((0x1 << j) & data_mask)
         {
         	Signal[index] = XXX;
         	Signal_Level[index] = HIGH;
+        	/* level位置起*/
+        	Signal[index] &= （0x1 << 15);
         }
         ...
         ...
@@ -168,11 +171,11 @@
     ```
     if ((j >= 5) && (j < = (5 + (2 * (nibblenum - 1)))) && (j % 2 != 0))
     ```
-```
     
-7.  **在生成信号时，同时遍历`Signal`和`Signal_Level`，这样就可以有效值对应高电平还是低电平**
+7. 在生成信号时，同时遍历`Signal`：
 
-   > 或者还有骚操作：对于每一个有效值，手动定义一位level位，比如第16位，然后如果高电平就(0x1 << 16) & Signal[index]； 然后在生成信号的时候判断level位，并拆分出数据位。 不知道那种方法更好？
+   * 对于高低电平：`Signal[index] & 0x8000`
+   * 对于真实数据：`Signal[index] & 0xFF`
 
 8. 关于翻转的实时性：
 
@@ -181,6 +184,3 @@
 
 
 ---
-
-
-```
