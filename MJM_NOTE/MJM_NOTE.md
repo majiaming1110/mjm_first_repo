@@ -1,4 +1,7 @@
+
+
 ### Typora激活码
+
 `uOIqj26Dz3nNSYF00s4paGgzfoGSh1zpP94V59p5s84son7syzCR0w1iaXPb/GNWwpzVQDBHd6vgyHXptveBGG5YL5tAMbjBxm8BiGCFhyQ0HGC0OXFv0KIHG4XD4RO5RHjOzfcsozxVyHVVVaLqTA==`
 
 
@@ -20,10 +23,12 @@
 
 ### 一周总结
 
-* SENT的看门狗
-* SENT DMA传输的中断入参
-* SENT FIFO & FRAMEDATA & 毛刺
 * SENT测试代码
+  * SENT的看门狗
+  * SENT DMA传输的中断入参
+  * SENT FIFO & FRAMEDATA & 毛刺
+  * SENTG --- ALTER CRC
+  * 关于自动生成SENT代码的优化编写，支持自定义信号...
 
 
 
@@ -74,22 +79,104 @@
 
 1. 定义数组时，默认给数据段分配8个nibble，这样就不用使用malloc申请堆的空间了
 
-2. length固定了,别忘了是8*2！
+2. ~~length固定了,别忘了是8*2！~~，length的大小根据nibble的大小来，不用刻意填满整个数组
 
-3. 关于除数据段之外的赋值逻辑不需要大改，只需要基于"length固定这一点来改就OK"
+3. 对于每一帧中的赋值，使用mask来和枚举
 
-3. 关于数据段，根据结构体的NIBBLE数量来赋值
-    3.1 对于每一帧，有8个数据空间，且前面的有固定2帧（同步段和校验段）,所以赋值固定从“j == 5”开始
-    3.2 第一个数据j=5  第二个数据j=7  第三个数据j=9
+    1. 用一个程序定义各个nibble情况，比如:
+
+        > 或许写成宏的方式更好？
+        
+        ```
+        static uint32 Get_Data_Mask( nibble_num )
+        {
+            uint32 data_mask;
+        
+            if (nibble_num == 1) 
+            {
+                data_mask = 0x20;	
+            }
+            else if (nibble_num == 2) 
+            {
+                data_mask = 0xA0;	
+            }
+            else if (nibble_num == 3) 
+            {
+                data_mask = 0x2A0;	
+            }
+            else if (nibble_num == 4) 
+            {
+                data_mask = 0xAA0;	
+            }
+            else if (nibble_num == 5) 
+            {
+                data_mask = 0x2AA0;	
+            }
+            else if (nibble_num == 6) 
+            {
+                data_mask = 0xAAA0;	
+            }
+            else if (nibble_num == 7) 
+            {
+                data_mask = 0x2AAA0;	
+            }
+            else if (nibble_num == 8) 
+            {
+                data_mask = 0xAAAA0;	
+            }
+            else
+            {
+                //do nothing
+            }
+        
+            return data_mask;
+        }
+        ```
+        
+    2. 然后在每一帧的有效值赋值时，使用如下的语法：**且额外定义一个和Signal[ ]大小相同的数组专门用于存储当前有效数据为高/低电平**
+
+        ```
+        #define HIGH 1
+        #define LOW 0
+        
+        if (j == 0)
+        {
+        	Signal[index] = 6;
+        	Signal_Level[index] = LOW;
+        }
+        else if (j == 1)
+        {
+        	Signal[index] = 50;
+        	Signal_Level[index] = HIGH;
+        }
+        else if ((0x1 << j) & data_mask)
+        {
+        	Signal[index] = XXX;
+        	Signal_Level[index] = HIGH;
+        }
+        ...
+        ...
+        ```
+
+4. ~~关于除数据段之外的赋值逻辑不需要大改，只需要基于"length固定这一点来改就OK"~~
+
+5. ~~关于数据段，根据结构体的NIBBLE数量来赋值~~
+    ~~3.1 对于每一帧，有8个数据空间，且前面的有固定2帧（同步段和校验段）,所以赋值固定从“j == 5”开始~~
+    ~~3.2 第一个数据j=5  第二个数据j=7  第三个数据j=9~~
+
+6. ~~在生成信号的时候，需要增加对于数据段的判断~~
     
-4. 在生成信号的时候，需要增加对于数据段的判断
-    * 在生成信号时，也需要在for里面嵌套一个对每一帧的循环：在每一帧中，从j==5后：
+    * ~~在生成信号时，也需要在for里面嵌套一个对每一帧的循环：在每一帧中，从j==5后：~~
     ```
     if ((j >= 5) && (j < = (5 + (2 * (nibblenum - 1)))) && (j % 2 != 0))
-    ```
+```
     
+7.  **在生成信号时，同时遍历`Signal`和`Signal_Level`，这样就可以有效值对应高电平还是低电平**
 
-6. 关于翻转的实时性：
+   > 或者还有骚操作：对于每一个有效值，手动定义一位level位，比如第16位，然后如果高电平就(0x1 << 16) & Signal[index]； 然后在生成信号的时候判断level位，并拆分出数据位。 不知道那种方法更好？
+
+8. 关于翻转的实时性：
+
    * 仿照TST.c中的逻辑来写，使用systick？
 
 
