@@ -34,6 +34,9 @@
 ### 暂存问题
 
 1. bsp工程下port模块初始化传参问题
+2. SENT.TST：
+   1. `TaskActionCallback`中`if(task_idx < TST_Runtime.TimeDurations)`有什么意义？后者难道不是地址吗？
+   2. `TST_INIT`中，为什么要清除`D_CACHE`？
 
 
 
@@ -52,11 +55,14 @@
 
 ### 临时TODO LIST
 
-- [ ] SNET: 完善代码不使用malloc
-- [ ] SENT: 完善CRC函数的编码
-- [ ] SENT: 根据MIZAR C规范，为每一个if写一个else
-- [ ] SENT: 优化实现逻辑，让信号生成的更加实时
-- [ ] SENT: 结构体的nibble数量定义成一个枚举，使得程序中可以直接命名
+- [ ] **SENT_TST**: 测试一下TST，如果不删除信号最后一位，生成的波形是什么样的？
+
+- [ ] **SNET_自己写的sent_signal_produce:** 
+  - [ ] 完善代码不使用malloc
+  - [ ] 完善CRC函数的编码
+  - [ ] 根据MIZAR C规范，为每一个if写一个else
+  - [ ] 优化实现逻辑，让信号生成的更加实时
+- [ ] ~~SENT: 结构体的nibble数量定义成一个枚举，使得程序中可以直接命名~~
 
 
 
@@ -82,6 +88,9 @@
     if ((j >= 5) && (j < = (5 + (2 * (nibblenum - 1)))) && (j % 2 != 0))
     ```
     
+
+6. 关于翻转的实时性：
+   * 仿照TST.c中的逻辑来写，使用systick？
 
 
 
