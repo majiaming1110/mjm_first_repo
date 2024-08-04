@@ -1,5 +1,3 @@
-
-
 ### Typora激活码
 
 `uOIqj26Dz3nNSYF00s4paGgzfoGSh1zpP94V59p5s84son7syzCR0w1iaXPb/GNWwpzVQDBHd6vgyHXptveBGG5YL5tAMbjBxm8BiGCFhyQ0HGC0OXFv0KIHG4XD4RO5RHjOzfcsozxVyHVVVaLqTA==`
@@ -165,10 +163,11 @@
     ~~3.2 第一个数据j=5  第二个数据j=7  第三个数据j=9~~
 
 6. ~~在生成信号的时候，需要增加对于数据段的判断~~
-    
+   
     * ~~在生成信号时，也需要在for里面嵌套一个对每一帧的循环：在每一帧中，从j==5后：~~
     ```
     if ((j >= 5) && (j < = (5 + (2 * (nibblenum - 1)))) && (j % 2 != 0))
+    ```
 ```
     
 7.  **在生成信号时，同时遍历`Signal`和`Signal_Level`，这样就可以有效值对应高电平还是低电平**
@@ -183,3 +182,5 @@
 
 ---
 
+
+```
