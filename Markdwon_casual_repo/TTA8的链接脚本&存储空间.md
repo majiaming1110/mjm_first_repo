@@ -60,7 +60,7 @@ TTA8的程序内存空间分配大致遵循**C语言的内存分区法则**：
 
 <img src="C:\Users\admin\Desktop\MJM_personal_repo\TT_learn\pic\image-20240807131119111.png" alt="image-20240807131119111" style="zoom: 67%;" />
 
-
+![image-20240809194704496](pic/image-20240809194704496.png)
 
 ## TTStudio的`.MemMap`文件
 
