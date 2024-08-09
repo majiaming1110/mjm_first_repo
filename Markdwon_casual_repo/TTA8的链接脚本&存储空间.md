@@ -58,7 +58,7 @@ TTA8的程序内存空间分配大致遵循**C语言的内存分区法则**：
 
 ## TTA8 存储架构
 
-<img src="C:\Users\admin\Desktop\MJM_personal_repo\TT_learn\pic\image-20240807131119111.png" alt="image-20240807131119111" style="zoom:50%;" />
+<img src="C:\Users\admin\Desktop\MJM_personal_repo\TT_learn\pic\image-20240807131119111.png" alt="image-20240807131119111" style="zoom: 67%;" />
 
 
 
@@ -93,7 +93,7 @@ TTA8的程序内存空间分配大致遵循**C语言的内存分区法则**：
 核心语句：
 
 	1. `#ifdef BASE_START_SEC_VAR_INIT_32`
- 	2. `#pragma clang section bss="" data=".mcal_data_init_32.base" rodata="" text=""`
+	2. `#pragma clang section bss="" data=".mcal_data_init_32.base" rodata="" text=""`
 
 这个代码块的核心思想就是：**如果在某个.c/.h文件中定义了`BASE_START_SEC_VAR_INIT_32`这个宏，那么这个文件的data段会被==语义划分==到`.mcal_data_init_32.base`段中**
 
@@ -113,7 +113,11 @@ TTA8的程序内存空间分配大致遵循**C语言的内存分区法则**：
 
 位于`/Debug/{project_name}.map`。在编译项目完成后，链接脚本会生成`.elf`文件，同时也会附带`.map`，`.dis`（反汇编）等文件，其中`.map`文件中的内容**指示了编译后实际的内存分配**：
 
-> 关于.map文件中的LMA和VMA，参考`builder_learn.md`
+> V(Virtual)MA 是**虚拟内存地址**；L(Load)MA 是**加载内存地址**。在程序启动时，通常会有一个启动代码（启动例程）负责将程序或数据从LMA复制到VMA，使得程序可以正常运行
+>
+> * 之所以要复制是因为：程序的代码通常存储在`非易失性存储器中（ROM）`中，这类存储器断电不会丢失数据；但是程序在执行时通常需要在更快的存储器（如SRAM）中运行，或者程序需要修改数据而非易失性存储器不能直接修改（。因此，启动时会将程序从LMA加载到RAM中的VMA位置，这个过程称为启动代码的复制或初始化。
+>   * **LMA**：在非易失性存储器中的实际存储位置，用于存储程序和数据。
+>   * **VMA**：程序和数据在运行时所在的位置，通常是在易失性存储器（如RAM）中
 
 地址从低到高，大致的排序是：(大致遵循**C语言的内存分区法则**)
 
@@ -168,4 +172,29 @@ TTA8的程序内存空间分配大致遵循**C语言的内存分区法则**：
 > ​																|
 >
 > ​															... ... ...	
+
+
+
+## 程序中调用语义标签（符号）
+
+从刚刚的描述已经直到：
+
+1. 语义标签会在链接脚本中被划分到真实物理地址
+2. `.map`文件中会进一步证实上面这一点，**并会给出语义标签最终的实际地址**
+
+比如，`__text_end`标签，在`.map`文件中：
+
+<img src="C:\Users\admin\Desktop\MJM_personal_repo\Markdwon_casual_repo\pic\image-20240808115414647.png" alt="image-20240808115414647" style="zoom:50%;" />
+
+那么，如果我想在C程序中，获得这个**语义标签（符号）的地址**，可以这么写：
+
+```c
+extern uint32 *__text_end;
+
+int main()
+{
+	printf("address where text end: 0x%x\r\n", &__text_end);
+    return 0;
+}
+```
 

@@ -1,25 +1,50 @@
 # OVERALL & 零碎知识点
 * MCAL放在EB下（AUTOSAR协议）
+
 * bsp包放在TT Studio
     * 使用TT Studio来创建的工程就是bsp工程
     * 配置文件名字带driver，就是bsp的
+    
 * Crypto: 用于处理加密（国密）相关的模块；主要提供硬件支持
+
 * HW -- Hard Ware
+
 * 开发板引脚图
   * COB板 -- 会全接口开放引脚图
   * 核心板 -- 现在用的
   * datasheet -- 看引脚复用
+  
 * 串口报“HardFault” -- 跑飞了
+    
     * 跑一段时间关闭DEBUG中断，generate一下
+    
 * Confluence里有很多软件的经验文档（现在已转为redmine）
+
 * AUTOSAR中，`SRS`代表`软件需求规范`；`SWS`代表`软件规范`（__更详细__）
+
 * `C:\Users\admin\Desktop\mcal_demo\mcal\dio_demo\led-blink\srcA8V2_CORE_DCDC_V1_1`是板子的引脚图，第二页右边最大的应该就是A8，找到目标GPIO看它对应引出来的红色字写了什么，__红色的字就是在板子四周实际打印出来的字__
+
 * J-Link的全称是：SEGGER-JLink
+
 * CMSIS 代表 "Cortex Microcontroller Software Interface Standard"（Cortex 微控制器软件接口标准）。CMSIS 是由 ARM 提供的一套标准化软件框架和库，旨在简化 Cortex-M 微控制器的开发
+
 * ARM Cortex-M 处理器中，一个字（word）通常是 32 位，也就是 4 字节。
+
 * __选宏是迫不得已的__，只有在不能用`local inline`的时候再使用define
+
 * `volatile关键字`：当变量在中断处理程序中被修改，主程序也需要访问这个变量时，必须使用 volatile 确保主程序能看到中断处理程序所做的修改！
-* 
+
+* 在C语言中插入汇编的方法：
+
+    ```c
+    void mov_r7(void) {
+        __asm__ __volatile__ (
+            "mov r7, #1\n"
+        );
+    }
+    ```
+
+    
 
 
 ---
@@ -203,6 +228,8 @@ __模块的学习参考：这份文档+Xmind+芯片手册+AutoSAR规范__
 
 ### FLS模块
 
+* Fls_Drv_Erase的最后一个参数**必须是8K（8192）的倍数**，也就是**擦除的操作只能以扇区（sector）为单位**
+
 #### PFlash
 
 > 程序PFlash的1页（Page)定义为**16Bytes**， 要求**16字节对齐**；
@@ -224,7 +251,7 @@ __模块的学习参考：这份文档+Xmind+芯片手册+AutoSAR规范__
 >
 > 但是这只是开始写的地址要求，开始写之后，地址依然是+1 +1递增的，由于**写入的长度也要求16字节对齐，所以结束的地址依然可以保证16进制对齐**
 
-* **两**块**128KB**的FLASH空间，可配置的模拟 **4KB** 的 **EEPROM** 的功能
+* **两**块**128KB**的FLASH空间，==可配置的模拟 **4KB** 的 **EEPROM** 的功能==
 * 每一块FLASH空间对应**1个BANK**，每个BANK对应**32个扇区**，每个扇区的大小是**4KB（4096Bytes）**, BANK的起始地址分别是`0x1500000; 0x1520000`
 
 
@@ -259,7 +286,7 @@ __但是，如果将`SentDataDiscard`设置为`TRUE`时，不会丢弃数据！�
 
 ##### SENT帧结构
 * SENT信号帧结构
-  * `同步段` --- __固定56ticks__ 由于传感器和ECU的时钟频率不一样，所以需要同步段进行校准
+  * `同步段/校准段` --- __固定56ticks__ 由于传感器和ECU的时钟频率不一样，所以需要同步段进行校准
   * `状态/通讯段` --- __12~27 ticks__，用于传输串行消息/传感器错误信息
   * `数据段` --- __1~8 Nibbles__, 
   * `校验段` --- __12~27 ticks__，CRC校验，通过数据段反算得出

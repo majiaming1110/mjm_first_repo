@@ -7,7 +7,7 @@
 
 2. 在`Gpt_StartTimer`函数中，会尝试先检查`Gpt_PubGlobalState`是否为`GPT_STATE_UNINIT`：
    >`Gpt_PriParamCheck(GPT_STATE_UNINIT == Gpt_PubGlobalState, GPT_STARTTIMER_ID, GPT_E_UNINIT, &RetVal);`
-    
+   
     而跳转这个`Gpt_PriParamCheck`：
     ![alt text](QQ_1721788567902.png)
     会发现：当`TT_PERF`打开时，这个函数只会比较`RetVal`是否大于等于1，而由于`RetVal`是一个指针变量，此处没有加上`*`,所以`RetVal`的值代表地址，必定大于1，所以此处虽然`Gpt_PubGlobalState`的确是`GPT_STATE_UNINIT`，但是这个检查的函数会返回E_OK，__也就是说任何paramcheck函数在`TT_PERF`开启时是无效的。__
@@ -26,7 +26,10 @@
 
 __发生这种现象的原因在于：去初始化之后，`Gpt_Hw_DeInit`函数调用了`Mcu_Drv_Misc_LocalResetModules`和`Mcu_Drv_Clk_StopModules`将模块关闭了，此时是无法对寄存器进行写值的，但是由于没有进行寄存器回读，让程序以为成功写值了。`Gpt_PubGlobal.GptTargetValue[Channel]`不是寄存器的值而是程序以为成功并赋值的一个变量；而`TimeElapsed`是真正从寄存器读的值，所以为0；这二者相减自然就是设置的目标值了__
 
+
+
 ## 模块时钟的开关
+
 根据刚刚的结论可以了解到：在调用INIT/DEINIT来初始化/去初始化GPT模块的时候，底层一个很重要的函数就是`Mcu_Drv_Clk_Stop/StartModules`,在初始化的时候打开时钟；在去初始化的时候关闭时钟。
 * 已开启时钟为例，在`Mcu_Drv_Clk_StartModules`函数中，核心的操控语句就是：
 ![alt text](QQ_1721803571246.png)
