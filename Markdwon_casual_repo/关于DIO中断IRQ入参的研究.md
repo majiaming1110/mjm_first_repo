@@ -18,7 +18,7 @@ __可见，由于连接在一起，这两个电平的翻转几乎同时发生__
 3. 根据点2，尝试修改ISR函数，将入参改为`MASK_INT_STAT`
 ![alt text](QQ_1721034033566.png)
 此时，输出变成了预期的状态：
-![alt text](QQ_1721034145575.png)
+<img src="QQ_1721034145575.png" alt="alt text" style="zoom:50%;" />
 >    * 在`Port_Hw.c/Port_Hw_PriSetInPinCfg`中，有以下代码：
     ![alt text](QQ_1721034887266.png)
     相应在`Dio_Hw_Irq.c/Dio_Hw_Interrupt_Init`中，有以下代码：
