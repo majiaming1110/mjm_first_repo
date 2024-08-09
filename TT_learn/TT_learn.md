@@ -15,7 +15,7 @@
   * datasheet -- 看引脚复用
   
 * 串口报“HardFault” -- 跑飞了
-    
+  
     * 跑一段时间关闭DEBUG中断，generate一下
     
 * Confluence里有很多软件的经验文档（现在已转为redmine）
@@ -204,10 +204,11 @@ __模块的学习参考：这份文档+Xmind+芯片手册+AutoSAR规范__
 * 在AUTOSAR规范下，有一个叫做Predef Timer(预定义定时器)的概念：
   * AUTOSAR规定的预定时器种类：
     ![alt text](./pic/QQ_1720665071436.png)
+    
     * *AUTOSAT希望能够尽可能的实现以上所有的预定时器，以确保所有平台的基于时间的功能兼容性*
     * 预定时器是一个自动循环计时的定时器
-    * 所有涉及channel作为参数的API都对预定义定时器无效，所以对于预定时器来说，不需要对他调用start和stop，也不能使用get_remaining/eclapse_time的API，所以在TTStudio中，想获取预定义定时器的当前计数值可以调用`Gpt_GetPredefTimerValue`函数。__同时，在TTStudio里，普通定时器的计数值是存储在CNT寄存器中的，但是预定义定时器的当前计数值是靠软件层面自加实现的（在预定义定时器的IRQ对计数值自加）__
-  
+  * 所有涉及channel作为参数的API都对预定义定时器无效，所以对于预定时器来说，不需要对他调用start和stop，也不能使用get_remaining/eclapse_time的API，所以在TTStudio中，想获取预定义定时器的当前计数值可以调用`Gpt_GetPredefTimerValue`函数。__同时，在TTStudio里，普通定时器的计数值是存储在CNT寄存器中的，但是预定义定时器的当前计数值是靠软件层面自加实现的（在预定义定时器的IRQ对计数值自加）__
+    
   * AUTOSAR 建议每个时间刻度使用一个硬件定时器，并通过选择合适的时钟和预分频器将硬件定时器直接与时钟源 "fclock = 1 / (时间刻度)" 连接。这样，可以直接使用定时器计数寄存器的值，而无需进行任何适配（计算），以提高性能
     
   * *比如，如果GPT使用了`FTM_CLOCK_SOURCE_SYSTEMCLK`作为时钟源，那么频率是120Mhz，那么如果我想实现1us的时间刻度，我应该选择120分频（__1微秒的时间间隔对应于1 MHz的频率__）*

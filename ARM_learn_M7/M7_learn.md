@@ -74,9 +74,7 @@
 * 应用场景：
   * 涉及DMA需要搬运的数据，可以为其加上`__attribute__ ((section (".mcal_data_dtcm")))`的属性；使用 DTCM 作为数据存储区域，并通过 DMA 进行数据传输，可以显著提升系统的响应时间和数据处理效率
   * 对于需要快速处理的函数/代码，在定义前指定`__attribute__((section(".mcal_text_itcm")))`属性，但注意，__这句话的作用域仅限紧跟的一个函数__
-    ![alt text](C:\Users\admin\Desktop\MJM_personal_repo\ARM_learn_M7\pic\QQ_1722322615019.png)
-
-
+    ![image-20240809200837914](pic/image-20240809200837914.png)
 
 
 
@@ -84,9 +82,9 @@
 
 ### 不同中断的属性对照表
 
-<img src="C:\Users\admin\Desktop\MJM_personal_repo\ARM_learn_M7\pic\image-20240806100523877.png" alt="image-20240806100523877" style="zoom:50%;" />
+![image-20240809200858500](pic/image-20240809200858500.png)
 
-<img src="C:\Users\admin\Desktop\MJM_personal_repo\ARM_learn_M7\pic\image-20240806100543001.png" alt="image-20240806100543001" style="zoom:50%;" />
+![image-20240809200913507](pic/image-20240809200913507.png)
 
 * CMSIS使用的是IRQ号
 * 异常的处理：
@@ -95,7 +93,7 @@
   * *NMI, PendSV, SVCall, SysTick 和上述 fault exceptions* 都属于系统异常 由**System handlers**来处理
 * **Vector Table**:
 
-> <img src="C:\Users\admin\Desktop\MJM_personal_repo\ARM_learn_M7\pic\image-20240806101948364.png" alt="image-20240806101948364" style="zoom: 50%;" />
+> <img src="pic/image-20240809200931763.png" alt="image-20240809200931763" style="zoom:67%;" />
 >
 > PS：这个表格展示的是最多中断情况下的状态
 >
@@ -110,10 +108,10 @@
 > 如果Vector Table的起始地址是0x00000005, 那VTOR中就从bit7开始存0x00000005；
 
 * 在`src/bsp/env/vector_table_m7.S`中，用汇编定义了详细的中断向量表，且将16位之后的外部中断函数全部定义成了可以被重写的`weak`函数；在`Platform_IntCtrl_Cfg.h`中，将所有外部中断的weak函数重新定义。如果在配置的时候，将某个外部中断打开，那么程序会读取配置生成的`Platform_IntCtrl_PBCfg.c`，找到开启的中断号并通过操控`NVIC`模块的`IESR`寄存器打开中断
-  <img src="C:\Users\admin\Desktop\MJM_personal_repo\TT_learn\pic\QQ_1721971896084.png" alt="alt text" style="zoom:50%;" />
+  <img src="pic/image-20240809201026330.png" alt="image-20240809201026330" style="zoom:50%;" />
 
 * 如果前15个中断号有对应的模块且该模块开启了中断，那么中断处理函数就会默认在`src/bsp/env/exceptions_m7.c`中被定义，且在这个文件中被赋予`weak`属性
-  <img src="C:\Users\admin\Desktop\MJM_personal_repo\TT_learn\pic\QQ_1721966393494.png" alt="alt text" style="zoom:50%;" />
+  <img src="pic/image-20240809201048413.png" alt="image-20240809201048413" style="zoom:50%;" />
 
 * 在中断向量表中，每个ISR占一个`word`的大小（4字节）
   __由于上述这些中断都是weak属性的，所以可以选择动态重写这些函数，我们现在已经知道VectorTable的起始地址存储在`SCB->VTOR`中，那么根据C语言语法，VectorTable就是每个元素为一个字（4字节，32位，uint32）且数组名为`SCB->VTOR`的数组: `((uint32 *)SCB->VTOR)[ ] `。且根据VectorTable不难看出每个ISR函数的相对偏移，比如我想重写SYSTick的回调函数，SYSTick是VectorTable的第15个元素，那么*SYSTick的ISR函数入口地址*就可以表示为`((uint32 *)SCB->VTOR)[15]`__
