@@ -2,7 +2,7 @@
 
 TTA8的程序内存空间分配大致遵循**C语言的内存分区法则**：
 
-<img src="C:\Users\admin\Desktop\MJM_personal_repo\Markdwon_casual_repo\pic\image-20240807140045486.png" alt="image-20240807140045486" style="zoom:50%;" />
+<img src="pic/image-20240809200027198.png" alt="image-20240809200027198" style="zoom:50%;" />
 
 ### 栈区：
 
@@ -58,9 +58,9 @@ TTA8的程序内存空间分配大致遵循**C语言的内存分区法则**：
 
 ## TTA8 存储架构
 
-<img src="C:\Users\admin\Desktop\MJM_personal_repo\TT_learn\pic\image-20240807131119111.png" alt="image-20240807131119111" style="zoom: 67%;" />
+<img src="pic/image-20240809200324809.png" alt="image-20240809200324809" style="zoom:50%;" />
 
-![image-20240809194704496](pic/image-20240809194704496.png)
+
 
 ## TTStudio的`.MemMap`文件
 
@@ -105,7 +105,7 @@ TTA8的程序内存空间分配大致遵循**C语言的内存分区法则**：
 
 位于`/src/bsp/env/linker_flash_m7.ld`，其中**声明之前语义划分的那些标签，具体应该归属到哪个物理内存空间**：
 
-<img src="C:\Users\admin\Desktop\MJM_personal_repo\Markdwon_casual_repo\pic\image-20240807145052565.png" alt="image-20240807145052565" style="zoom:50%;" />
+<img src="pic/image-20240809200418005.png" alt="image-20240809200418005" style="zoom:50%;" />
 
 
 
@@ -184,7 +184,7 @@ TTA8的程序内存空间分配大致遵循**C语言的内存分区法则**：
 
 比如，`__text_end`标签，在`.map`文件中：
 
-<img src="C:\Users\admin\Desktop\MJM_personal_repo\Markdwon_casual_repo\pic\image-20240808115414647.png" alt="image-20240808115414647" style="zoom:50%;" />
+<img src="pic/image-20240809200509988.png" alt="image-20240809200509988" style="zoom: 50%;" />
 
 那么，如果我想在C程序中，获得这个**语义标签（符号）的地址**，可以这么写：
 
